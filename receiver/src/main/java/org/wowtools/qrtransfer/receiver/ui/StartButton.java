@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
 public class StartButton extends JButton {
 
     public StartButton() throws HeadlessException {
-        super("start");
+        super("开始");
         this.setLayout(null);
         this.setBounds(0, 0, 100, 30);
     }

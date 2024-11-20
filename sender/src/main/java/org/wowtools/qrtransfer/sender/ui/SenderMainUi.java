@@ -28,7 +28,7 @@ public class SenderMainUi extends JFrame {
     public static final LogTextArea logTextArea;
 
     static {
-        SenderMainUi ui = new SenderMainUi("sender");
+        SenderMainUi ui = new SenderMainUi("MD5 checker");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         ui.setSize(screenSize.width, screenSize.height);    //设置Frame的大小
 //        ui.setBackground(Color.yellow);      //设置Frame的背景色
@@ -49,17 +49,17 @@ public class SenderMainUi extends JFrame {
 
         //二维码框
         int qrCodeWidth = w > h ? h : w;
-        qrCodeCanvas = new QrCodeCanvas(256);
+        qrCodeCanvas = new QrCodeCanvas(Config.qrCodeWidth);
         ui.add(qrCodeCanvas);
 
 
-        //日志
+//        //日志
         logTextArea = new LogTextArea(35);
         ui.add(logTextArea);
 
         //翻页
         pageTurner = new PageTurner();
-        logTextArea.addKeyListener(pageTurner);
+        qrCodeCanvas.addKeyListener(pageTurner);
 
         //关闭按钮
         ui.addWindowListener(new WindowAdapter() {

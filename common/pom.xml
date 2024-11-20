@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
-            <version>3.4.0</version>
+            <version>3.5.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
@@ -25,12 +25,12 @@
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
-            <version>3.4.0</version>
+            <version>3.5.3</version>
         </dependency>
         <dependency>
             <groupId>org.wowtools</groupId>
             <artifactId>catframe-common</artifactId>
-            <version>1.5</version>
+            <version>1.4.2</version>
         </dependency>
     </dependencies>
 

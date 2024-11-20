@@ -23,10 +23,16 @@ public class ReceiverMainUi extends JFrame {
     static {
         ui.setSize(500, 600);
 
+        JPanel panel = new JPanel(new FlowLayout());
+        ui.add(panel,BorderLayout.NORTH);
+
         //开始按钮
         StartButton startButton = new StartButton();
-        ui.add(startButton, BorderLayout.NORTH);
-        startButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(startButton);
+
+        //自动按钮
+        AutoButton autoButton = new AutoButton();
+        panel.add(autoButton);
 
         //进度文本框
         stateText = new JLabel("等待开始");

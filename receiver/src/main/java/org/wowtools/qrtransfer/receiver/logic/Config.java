@@ -20,6 +20,8 @@ public class Config {
      */
     public static final long pageDelay;
 
+    public volatile static boolean autoPressKey = true;
+
     static {
         PropertiesReader p = new PropertiesReader(StartReceiver.class, "config.properties");
 

@@ -21,6 +21,6 @@ public class QrCodeCanvas extends Canvas {
     }
 
     public void paint(Graphics g) {
-        g.drawImage(img, 10, 10, this);
+        g.drawImage(img, 0, 0 ,512,512,this);
     }
 }

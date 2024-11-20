@@ -26,7 +26,9 @@ public class CaptureScreen {
 
     private static BufferedImage getCaptureScreenImage() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Rectangle screenRectangle = new Rectangle(screenSize);
+//        Rectangle screenRectangle = new Rectangle(screenSize);
+        //TODO 做成动态设置位置
+        Rectangle screenRectangle = new Rectangle(0,65,512,512);
         BufferedImage image = robot.createScreenCapture(screenRectangle);
         return image;
     }
@@ -35,6 +37,15 @@ public class CaptureScreen {
         BufferedImage img = getCaptureScreenImage();
         byte[] res = QRCodeUtil.parseQRCodeImage(img);
         return res;
+    }
+
+    /**
+     * 备用识别方案
+     * @return
+     */
+    public static byte[] encodeBoofcv(){
+        BufferedImage img = getCaptureScreenImage();
+        return BoofcvUtil.parseQRCodeImage(img);
     }
 
 

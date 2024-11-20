@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -52,7 +53,7 @@ public class FileReader {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        Iterator<QrPageProto.QrPagePb> iterator = new Iterator<>() {
+        Iterator<QrPageProto.QrPagePb> iterator = new Iterator<QrPageProto.QrPagePb>() {
             int len;
             int currentPage = 0;
             byte[] buffer = new byte[bufferSize];
@@ -99,7 +100,7 @@ public class FileReader {
                         if (size < 32) {
                             throw new RuntimeException("无法通过二维码测试,size:" + size);
                         }
-                        size = size / 2;
+                        size = (int) (size * 0.95);
                     } while (true);
                 } else {//直接返回二维码
                     bytes = readFromMem(size);
@@ -146,9 +147,9 @@ public class FileReader {
             if (null == qrBytes) {
                 return false;
             }
+            return Arrays.equals(bytes,qrBytes);
         } catch (Exception e) {
             return false;
         }
-        return true;
     }
 }

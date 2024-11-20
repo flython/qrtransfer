@@ -5,8 +5,13 @@ import org.wowtools.qrtransfer.common.util.Constant;
 import org.wowtools.qrtransfer.receiver.pojo.Page;
 import org.wowtools.qrtransfer.receiver.ui.ReceiverMainUi;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.util.Base64;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * 消息接收器
@@ -59,10 +64,11 @@ public class Receiver {
                 sb.append("已完成:").append(percent).append("%");
                 if (percent > 0) {
                     long cost = System.currentTimeMillis() - startPageTime;
-                    long remain = (100 - percent) / percent * cost / 1000;
-                    sb.append(" 剩余:").append(remain).append("秒");
                     float speed = FileWriter.getSize() * 1000f / 1024 / cost;
-                    sb.append(" 速度:").append(String.format("%.3f", speed)).append("kb/s");
+                    sb.append(" 平均速度:").append(String.format("%.3f", speed)).append("kb/s");
+                    long remain = (100 - percent) / percent * (cost / 1000);
+                    sb.append(" 剩余:").append(remain).append("秒");
+
                 }
                 setState(sb.toString());
             }
@@ -124,20 +130,30 @@ public class Receiver {
         while (true) {
             Page page;
             try {
-                if (KeyEvent_Empty != keyEvent) {
+                if (KeyEvent_Empty != keyEvent && Config.autoPressKey) {
                     robot.keyPress(keyEvent);
                     robot.keyRelease(keyEvent);
                     log("按下 " + KeyEvent.getKeyText(keyEvent));
-                } else {
-//                    log("空过");
                 }
-                if (Config.pageDelay > 0) {
-                    Thread.sleep(Config.pageDelay);
-                }
+//                if (Config.pageDelay > 0) {
+//                    Thread.sleep(Config.pageDelay);
+//                }
                 byte[] bytes = CaptureScreen.encode();
                 if (null == bytes) {//未读出二维码
-                    keyEvent = KeyEvent_Empty;
-                    continue;
+                    log("resize重试");
+                    bytes = CaptureScreen.encodeBoofcv();
+                    if (null == bytes && Config.autoPressKey){
+                        String s = showInputDialog("重试请取消，或手动输入Base64校正,取消后到重新打开自动模式前不会再弹出此窗口");
+                        if (s != null){
+                            bytes = Base64.getDecoder().decode(s);
+                        }
+                    }
+                    //仍然为空只能进入手动模式了
+                    if (bytes == null){                 log("未读出到二维码,已自动切换成手动模式，请读取成功或fix后切换成自动模式");
+                        Config.autoPressKey = false;
+                        keyEvent = KeyEvent_Empty;
+                        continue;
+                    }
                 }
                 if (oldPageNum == -1) {//判断二维码是否是头信息
                     if (headBytes.length == bytes.length) {
@@ -154,6 +170,12 @@ public class Receiver {
                     }
                 }
                 page = PageParser.parse(bytes);
+                log("page " + page.getPageNum() + ", size " + page.getBytes().length);
+                if (page.getPageNum() == oldPageNum) {
+                    keyEvent = KeyEvent_Empty;
+                    Thread.sleep(Config.pageDelay);
+                    continue;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 try {
@@ -162,11 +184,6 @@ public class Receiver {
                     interruptedException.printStackTrace();
                 }
                 keyEvent = KeyEvent_Empty;
-                continue;
-            }
-            log("page " + page.getPageNum() + ", size " + page.getBytes().length);
-            if (page.getPageNum() == oldPageNum) {
-                keyEvent = KeyEvent_NextPage;
                 continue;
             }
             if (page.getPageNum() != oldPageNum + 1) {//跳页处理
@@ -194,5 +211,12 @@ public class Receiver {
 
     private static void log(String str) {
         ReceiverMainUi.logTextArea.log(str);
+    }
+
+    // 显示输入框并阻塞当前线程，直到用户点击按钮
+    static String showInputDialog(String message) {
+        // 使用 JOptionPane 显示输入对话框并返回用户输入的内容
+        String input = JOptionPane.showInputDialog(null, message);
+        return input;
     }
 }

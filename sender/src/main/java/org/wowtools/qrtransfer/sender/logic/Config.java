@@ -21,6 +21,7 @@ public class Config {
      */
     public static final int initQrPageSize;
 
+
     /**
      * 二维码宽度(像素)，默认256，过大过小都会影响解析，需合理设置
      */
