@@ -27,8 +27,7 @@ public class CaptureScreen {
     private static BufferedImage getCaptureScreenImage() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //        Rectangle screenRectangle = new Rectangle(screenSize);
-        //TODO 做成动态设置位置
-        Rectangle screenRectangle = new Rectangle(0,65,512,512);
+        Rectangle screenRectangle = new Rectangle(Config.scanX,Config.scanY,Config.scanW,Config.scanW);
         BufferedImage image = robot.createScreenCapture(screenRectangle);
         return image;
     }
