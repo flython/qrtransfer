@@ -12,6 +12,9 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * 主界面
@@ -31,35 +34,24 @@ public class SenderMainUi extends JFrame {
         SenderMainUi ui = new SenderMainUi("MD5 checker");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         ui.setSize(screenSize.width, screenSize.height);    //设置Frame的大小
-//        ui.setBackground(Color.yellow);      //设置Frame的背景色
+        ui.setLayout(new GridLayout(2,3,10,10));
 
-//        // 全屏设置
-//        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-//        GraphicsDevice gd = ge.getDefaultScreenDevice();
-//        gd.setFullScreenWindow(ui);
+        List<QrCodeCanvas> qrCodeList = IntStream.range(0, 5).mapToObj(i -> {
+            QrCodeCanvas canvas = new QrCodeCanvas(Config.qrCodeWidth, String.valueOf(i).charAt(0));
+            //注册对应翻页
+            PageTurner pt = new PageTurner(canvas.nextKey);
+            canvas.addKeyListener(pt);
+            return canvas;
+        }).collect(Collectors.toList());
+        qrCodeList.forEach(ui::add);
+        JPanel controlPanel = new JPanel();
+        ui.add(controlPanel);
 
-        int w = ui.getWidth();
-        int h = ui.getHeight();
-
-        //确定水平布局还是垂直布局
-        BoxLayout layout = w > h ?
-                new BoxLayout(ui.getContentPane(), BoxLayout.X_AXIS) :
-                new BoxLayout(ui.getContentPane(), BoxLayout.Y_AXIS);
-        ui.setLayout(layout);
-
-        //二维码框
-        int qrCodeWidth = w > h ? h : w;
-        qrCodeCanvas = new QrCodeCanvas(Config.qrCodeWidth);
-        ui.add(qrCodeCanvas);
-
+        controlPanel.setLayout(new FlowLayout(FlowLayout.LEFT,5,5));
 
 //        //日志
         logTextArea = new LogTextArea(35);
-        ui.add(logTextArea);
-
-        //翻页
-        pageTurner = new PageTurner();
-        qrCodeCanvas.addKeyListener(pageTurner);
+        controlPanel.add(logTextArea);
 
         //关闭按钮
         ui.addWindowListener(new WindowAdapter() {

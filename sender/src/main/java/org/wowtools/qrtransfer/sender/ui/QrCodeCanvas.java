@@ -14,10 +14,13 @@ public class QrCodeCanvas extends Canvas {
 
     public final int width;
 
-    public QrCodeCanvas(int width) {
+    public final char nextKey;
+
+    public QrCodeCanvas(int width, char nextKey) {
         this.width = width;
         this.setBounds(0,0,width,width);
         img = new BufferedImage(width, width, BufferedImage.TYPE_INT_RGB);
+        this.nextKey = nextKey;
     }
 
     public void paint(Graphics g) {

@@ -32,6 +32,11 @@ public class PageTurner extends KeyAdapter {
     private int pageCacheCursor = pageCacheSize;
     private QrPageProto.QrPagePb currentPagePb = null;
     private final AtomicBoolean busying = new AtomicBoolean(false);
+    private char nextPageKeyChar;
+
+    public PageTurner(char nextPageKeyChar) {
+        this.nextPageKeyChar = nextPageKeyChar;
+    }
 
 
     @Override
@@ -48,14 +53,18 @@ public class PageTurner extends KeyAdapter {
 
         char inputKey = e.getKeyChar();
 
-        switch (inputKey) {
-            case Constant.Key_NextPage:
-                nextPage();
-                break;
-            case Constant.Key_BeforePage:
-                beforePage();
-                break;
+        if (inputKey == nextPageKeyChar){
+            nextPage();
         }
+
+//        switch (inputKey) {
+//            case Constant.Key_NextPage:
+//                nextPage();
+//                break;
+//            case Constant.Key_BeforePage:
+//                beforePage();
+//                break;
+//        }
 
         busying.set(false);
     }
