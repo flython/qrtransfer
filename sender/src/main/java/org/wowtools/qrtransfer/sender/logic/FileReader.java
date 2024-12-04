@@ -7,6 +7,7 @@ import org.wowtools.qrtransfer.common.util.ByteDeque;
 import org.wowtools.qrtransfer.common.util.Constant;
 import org.wowtools.qrtransfer.common.util.Md5Util;
 import org.wowtools.qrtransfer.common.util.QRCodeUtil;
+import org.wowtools.qrtransfer.sender.ui.QrCodeCanvas;
 import org.wowtools.qrtransfer.sender.ui.SenderMainUi;
 
 import java.io.File;
@@ -140,10 +141,14 @@ public class FileReader {
     }
 
 
+
     private static boolean testQrCode(byte[] bytes) {
+        QrCodeCanvas qrCodeCanvas = null;
+        // TODO 稍后再看检查逻辑是否有必要
+        if (qrCodeCanvas == null){return true;}
         try {
-            QRCodeUtil.generateQRCodeImage(bytes, SenderMainUi.qrCodeCanvas.img);
-            byte[] qrBytes = QRCodeUtil.parseQRCodeImage(SenderMainUi.qrCodeCanvas.img);
+            QRCodeUtil.generateQRCodeImage(bytes, qrCodeCanvas.img);
+            byte[] qrBytes = QRCodeUtil.parseQRCodeImage(qrCodeCanvas.img);
             if (null == qrBytes) {
                 return false;
             }

@@ -1,13 +1,13 @@
 package org.wowtools.qrtransfer.sender.ui;
 
 import org.wowtools.qrtransfer.common.protobuf.QrPageProto;
-import org.wowtools.qrtransfer.common.util.Constant;
 import org.wowtools.qrtransfer.common.util.QRCodeUtil;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -19,8 +19,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PageTurner extends KeyAdapter {
 
     private static final int pageCacheSize = 100;
+    private final List<QrCodeCanvas> qrCodeList;
 
-    private Iterator<QrPageProto.QrPagePb> pages;
+    private static Iterator<QrPageProto.QrPagePb> pages;
     private ArrayList<QrPageProto.QrPagePb> pageCaches = new ArrayList<>(pageCacheSize);
 
     {
@@ -32,10 +33,10 @@ public class PageTurner extends KeyAdapter {
     private int pageCacheCursor = pageCacheSize;
     private QrPageProto.QrPagePb currentPagePb = null;
     private final AtomicBoolean busying = new AtomicBoolean(false);
-    private char nextPageKeyChar;
 
-    public PageTurner(char nextPageKeyChar) {
-        this.nextPageKeyChar = nextPageKeyChar;
+
+    public PageTurner(List<QrCodeCanvas> qrCodeList) {
+        this.qrCodeList = qrCodeList;
     }
 
 
@@ -51,11 +52,13 @@ public class PageTurner extends KeyAdapter {
             return;
         }
 
-        char inputKey = e.getKeyChar();
-
-        if (inputKey == nextPageKeyChar){
-            nextPage();
+        int shift =  e.getKeyCode() - 96;
+        if(shift < 0 || shift >= qrCodeList.size()) {
+            return;
         }
+        QrCodeCanvas targetCode = qrCodeList.get(shift);
+        nextPage(targetCode);
+
 
 //        switch (inputKey) {
 //            case Constant.Key_NextPage:
@@ -72,7 +75,7 @@ public class PageTurner extends KeyAdapter {
     /**
      * 翻到下一页
      */
-    private void nextPage() {
+    private void nextPage(QrCodeCanvas targetCode) {
 
         if (pageCacheCursor < pageCacheSize) {//从缓存页取数据
             QrPageProto.QrPagePb page = pageCaches.get(pageCacheCursor);
@@ -81,8 +84,8 @@ public class PageTurner extends KeyAdapter {
                 return;
             }
             try {
-                QRCodeUtil.generateQRCodeImage(page.toByteArray(), SenderMainUi.qrCodeCanvas.img);
-                SenderMainUi.qrCodeCanvas.paint(SenderMainUi.qrCodeCanvas.getGraphics());
+                QRCodeUtil.generateQRCodeImage(page.toByteArray(), targetCode.img);
+                targetCode.paint(targetCode.getGraphics());
             } catch (Exception exception) {
                 throw new RuntimeException(exception);
             }
@@ -93,8 +96,8 @@ public class PageTurner extends KeyAdapter {
             if (pages.hasNext()) {
                 QrPageProto.QrPagePb page = pages.next();
                 try {
-                    QRCodeUtil.generateQRCodeImage(page.toByteArray(), SenderMainUi.qrCodeCanvas.img);
-                    SenderMainUi.qrCodeCanvas.paint(SenderMainUi.qrCodeCanvas.getGraphics());
+                    QRCodeUtil.generateQRCodeImage(page.toByteArray(), targetCode.img);
+                    targetCode.paint(targetCode.getGraphics());
                 } catch (Exception exception) {
                     exception.printStackTrace();
                     throw new RuntimeException(exception);
@@ -114,7 +117,7 @@ public class PageTurner extends KeyAdapter {
     /**
      * 翻到上一页
      */
-    private void beforePage() {
+    private void beforePage(QrCodeCanvas targetCode) {
         if (currentPagePb == null) {
             SenderMainUi.logTextArea.log("尚未开始");
             return;
@@ -135,8 +138,8 @@ public class PageTurner extends KeyAdapter {
             return;
         }
         try {
-            QRCodeUtil.generateQRCodeImage(page.toByteArray(), SenderMainUi.qrCodeCanvas.img);
-            SenderMainUi.qrCodeCanvas.paint(SenderMainUi.qrCodeCanvas.getGraphics());
+            QRCodeUtil.generateQRCodeImage(page.toByteArray(), targetCode.img);
+            targetCode.paint(targetCode.getGraphics());
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
@@ -145,7 +148,7 @@ public class PageTurner extends KeyAdapter {
 
     }
 
-    public synchronized void setPages(Iterator<QrPageProto.QrPagePb> pages) {
-        this.pages = pages;
+    public synchronized static void setPages(Iterator<QrPageProto.QrPagePb> pages) {
+        PageTurner.pages = pages;
     }
 }
