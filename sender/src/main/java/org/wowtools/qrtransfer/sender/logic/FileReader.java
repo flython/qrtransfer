@@ -1,6 +1,7 @@
 package org.wowtools.qrtransfer.sender.logic;
 
 import com.google.protobuf.ByteString;
+import lombok.RequiredArgsConstructor;
 import org.wowtools.qrtransfer.common.pojo.FileHead;
 import org.wowtools.qrtransfer.common.protobuf.QrPageProto;
 import org.wowtools.qrtransfer.common.util.ByteDeque;
@@ -8,7 +9,6 @@ import org.wowtools.qrtransfer.common.util.Constant;
 import org.wowtools.qrtransfer.common.util.Md5Util;
 import org.wowtools.qrtransfer.common.util.QRCodeUtil;
 import org.wowtools.qrtransfer.sender.ui.QrCodeCanvas;
-import org.wowtools.qrtransfer.sender.ui.SenderMainUi;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +24,11 @@ import java.util.Iterator;
  * @date 2020/9/28
  */
 public class FileReader {
+
+    File source;
+
+    public
+
 
     /**
      * 读取文件头信息

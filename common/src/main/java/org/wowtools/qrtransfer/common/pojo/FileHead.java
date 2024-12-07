@@ -12,6 +12,7 @@ import org.wowtools.qrtransfer.common.util.Constant;
 public class FileHead {
     private String md5;
     private long fileSize;
+    private int totalPage;
 
     public byte[] toByte() {
         String res = md5 + "\n" + fileSize;

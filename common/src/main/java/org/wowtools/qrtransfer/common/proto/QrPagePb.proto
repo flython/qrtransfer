@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package pojo;
+
+option java_package = "org.wowtools.qrtransfer.common.protobuf";
+option java_outer_classname = "QrPageProto";
+
+message QrPagePb {
+    bytes bytes = 1;
+    int32 pageNum = 2;
+    string message = 3;
+}
