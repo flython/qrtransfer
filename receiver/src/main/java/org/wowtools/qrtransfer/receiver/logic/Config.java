@@ -34,6 +34,9 @@ public class Config {
             if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
                 try {
                     String valStr = p.getString(field.getName());
+                    if (valStr == null) {
+                        continue;
+                    }
                     Object value = null;
                     if (field.getType() == boolean.class) {
                         value = Boolean.parseBoolean(valStr);
@@ -41,6 +44,8 @@ public class Config {
                         value = Long.parseLong(valStr);
                     } else if (field.getType() == int.class) {
                         value = Integer.parseInt(valStr);
+                    } else if (field.getType() == File.class) {
+                        value = new File(valStr);
                     }
                     field.set(null, value);
                 } catch (IllegalAccessException e) {
